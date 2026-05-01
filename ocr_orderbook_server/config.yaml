@@ -1,0 +1,58 @@
+youtube:
+  url: "https://www.youtube.com/watch?v=kvhRserj8ME"
+  stream_url_ttl: 900        # seconds to cache yt-dlp URL before re-fetching
+
+capture:
+  shots_dir: "shots"
+  max_frame_age: 300         # delete frames older than this many seconds
+  ffmpeg_timeout: 30         # hard subprocess timeout in seconds
+  reconnect_delay: 30        # initial retry delay when stream drops
+  max_reconnect_delay: 300   # exponential backoff ceiling
+
+ocr:
+  tesseract_path: "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+
+  ts:
+    crop_left: 0.415         # T&S panel left edge (fraction of frame width)
+    crop_right: 0.505        # T&S panel right edge
+    window_size: 50          # rolling print window for OBI
+    min_valid_rows: 5        # discard frame if fewer classified rows
+    header_skip: 40          # pixels to skip at top (panel labels)
+    row_height: 14           # fixed height of each T&S row in pixels
+    red_pct: 0.08            # min fraction of red pixels → SELL classification
+    buy_bright: 15           # min mean grayscale (non-red) → BUY classification
+    ocr_right_px: 35         # rightmost pixel columns sent to Tesseract
+    price_min: 2000.0        # reject OCR numbers below this (filter price column)
+    price_max: 6000.0        # reject OCR numbers above this
+    debug: true              # save debug_ts_classified.png every 10 frames
+
+  delta:
+    crop_left: 0.52          # Footprints panel left edge
+    crop_right: 0.72         # Footprints panel right edge
+    delta_row_top: 0.86      # M15 Delta row top (fraction of panel height)
+    delta_row_bot: 0.91      # M15 Delta row bottom
+    min_colored_pixels: 500  # minimum pixels to avoid noise frames
+    label_skip_px: 130       # skip this many left-side pixels (label column)
+    debug: true
+
+  cob:
+    crop_left: 0.93          # COB panel left edge
+    crop_right: 1.00         # COB panel right edge
+    wall_multiplier: 3.0     # size must exceed median * this to count as wall
+    min_wall_size: 20        # absolute floor (lots) for wall detection
+    ocr_scale: 2             # upscale factor before Tesseract
+    price_min: 3000.0        # valid price range for COB rows
+    price_max: 9999.0
+    debug: true
+
+server:
+  host: "0.0.0.0"
+  port: 5000
+  heartbeat_interval: 5      # seconds between heartbeat ticks
+  stale_threshold: 30        # seconds before a worker is considered dead
+
+logging:
+  level: "INFO"              # DEBUG | INFO | ERROR
+  log_dir: "logs"
+  max_bytes: 10485760        # 10 MB per file
+  backup_count: 7            # keep 7 rotated files
